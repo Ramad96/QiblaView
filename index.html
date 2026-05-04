@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>Qibla — Find Your Direction</title>
+<script>!function(){var t=localStorage.getItem('qibla-theme')||'dark';if(t==='device')t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t)}();</script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -628,11 +629,226 @@
     font-size: 22px;
     opacity: 0.6;
   }
+
+  /* ══ LIGHT MODE ═══════════════════════════════════════════ */
+  [data-theme="light"] {
+    --gold:      #A0601A;
+    --gold-light:#C8884A;
+    --gold-dim:  #7A4510;
+    --dark:      #F5F0E8;
+    --dark2:     #EDE7DB;
+    --dark3:     #E4DDD0;
+    --text:      #1C1610;
+    --text-dim:  rgba(28,22,16,0.55);
+  }
+  [data-theme="light"] body::before { opacity: 0.08; }
+  [data-theme="light"] header { border-bottom-color: rgba(160,96,26,0.18); }
+  [data-theme="light"] .divider { background: linear-gradient(90deg,transparent,#A0601A,transparent); }
+  [data-theme="light"] .input-mode-tabs { border-color: rgba(160,96,26,0.32); }
+  [data-theme="light"] .tab-btn { border-right-color: rgba(160,96,26,0.32); }
+  [data-theme="light"] .tab-btn.active { background: rgba(160,96,26,0.10); }
+  [data-theme="light"] .tab-btn:hover:not(.active) { background: rgba(160,96,26,0.05); }
+  [data-theme="light"] .search-row { border-color: rgba(160,96,26,0.42); }
+  [data-theme="light"] .search-btn { border-left-color: rgba(160,96,26,0.42); }
+  [data-theme="light"] .search-btn:hover { background: rgba(160,96,26,0.08); }
+  [data-theme="light"] .autocomplete-list { border-color: rgba(160,96,26,0.28); }
+  [data-theme="light"] .autocomplete-item { border-bottom-color: rgba(160,96,26,0.10); }
+  [data-theme="light"] .autocomplete-item:hover,
+  [data-theme="light"] .autocomplete-item.highlighted { background: rgba(160,96,26,0.08); }
+  [data-theme="light"] .info-strip,
+  [data-theme="light"] .map-panel,
+  [data-theme="light"] .kaaba-panel { border-color: rgba(160,96,26,0.22); }
+  [data-theme="light"] .panel-label { border-bottom-color: rgba(160,96,26,0.14); }
+  [data-theme="light"] .face-label.inactive { border-color: rgba(160,96,26,0.22); }
+  [data-theme="light"] .face-label.active { border-color: var(--gold); background: rgba(160,96,26,0.10); }
+  [data-theme="light"] .locate-btn:hover { color: #F5F0E8; }
+  [data-theme="light"] .leaflet-tile-pane { filter: brightness(1) saturate(0.85) sepia(0.05) !important; }
+  [data-theme="light"] .leaflet-control-attribution { background: rgba(245,240,232,0.92) !important; color: rgba(28,22,16,0.55) !important; }
+  [data-theme="light"] .leaflet-control-zoom a { background: #EDE7DB !important; color: var(--gold) !important; border-color: rgba(160,96,26,0.28) !important; }
+
+  /* ══ HEADER ACTION BUTTONS ════════════════════════════════ */
+  .header-actions {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    display: flex;
+    gap: 8px;
+  }
+  .header-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.22);
+    color: var(--text-dim);
+    font-size: 17px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .header-btn:hover { color: var(--gold); border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.06); }
+  [data-theme="light"] .header-btn { border-color: rgba(160,96,26,0.28); }
+  [data-theme="light"] .header-btn:hover { border-color: rgba(160,96,26,0.55); background: rgba(160,96,26,0.07); }
+
+  /* ══ SETTINGS PANEL ═══════════════════════════════════════ */
+  .settings-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1010;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  .settings-backdrop.open { opacity: 1; pointer-events: all; }
+  .settings-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 272px;
+    max-width: 90vw;
+    background: var(--dark2);
+    border-left: 1px solid rgba(201,168,76,0.2);
+    z-index: 1011;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .settings-panel.open { transform: translateX(0); }
+  [data-theme="light"] .settings-panel { border-left-color: rgba(160,96,26,0.28); }
+  .settings-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+    background: var(--dark3);
+  }
+  [data-theme="light"] .settings-panel-head { border-bottom-color: rgba(160,96,26,0.16); }
+  .settings-panel-title { font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--text-dim); }
+  .settings-close-btn {
+    background: none; border: none;
+    color: var(--text-dim); font-size: 18px;
+    cursor: pointer; padding: 2px 6px; line-height: 1;
+    transition: color 0.2s; font-family: inherit;
+  }
+  .settings-close-btn:hover { color: var(--gold); }
+  .settings-body { padding: 22px 18px; flex: 1; }
+  .settings-group { margin-bottom: 26px; }
+  .settings-group-label {
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  [data-theme="light"] .settings-group-label { border-bottom-color: rgba(160,96,26,0.16); }
+  .settings-opt {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; cursor: pointer;
+    border: 1px solid transparent; margin-bottom: 5px;
+    transition: all 0.2s;
+  }
+  .settings-opt:hover { background: rgba(201,168,76,0.05); border-color: rgba(201,168,76,0.18); }
+  .settings-opt.sel { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+  [data-theme="light"] .settings-opt:hover { background: rgba(160,96,26,0.05); border-color: rgba(160,96,26,0.22); }
+  [data-theme="light"] .settings-opt.sel { background: rgba(160,96,26,0.09); }
+  .settings-opt-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+  .settings-opt-name { font-size: 15px; color: var(--text); flex: 1; }
+  .settings-opt-tick { color: var(--gold); font-size: 11px; opacity: 0; transition: opacity 0.15s; }
+  .settings-opt.sel .settings-opt-tick { opacity: 1; }
+
+  /* ══ ABOUT MODAL ══════════════════════════════════════════ */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 1010; opacity: 0; pointer-events: none;
+    transition: opacity 0.28s ease;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: all; }
+  .about-modal {
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.2);
+    max-width: 560px; width: 100%;
+    max-height: 88vh; overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.32s ease;
+  }
+  .modal-backdrop.open .about-modal { transform: translateY(0); }
+  [data-theme="light"] .about-modal { border-color: rgba(160,96,26,0.25); }
+  .about-modal-head {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    background: var(--dark3);
+    position: sticky; top: 0; z-index: 1;
+  }
+  [data-theme="light"] .about-modal-head { border-bottom-color: rgba(160,96,26,0.16); }
+  .about-modal-title { font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--text-dim); }
+  .about-body { padding: 30px 28px 36px; }
+  .about-arabic-h {
+    font-family: 'Amiri', serif;
+    font-size: 38px; color: var(--gold);
+    text-align: center; line-height: 1.3; margin-bottom: 6px;
+  }
+  .about-sec { margin-bottom: 28px; }
+  .about-sec-label {
+    font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold-dim);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+  }
+  .about-sec-label::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.12); }
+  [data-theme="light"] .about-sec-label::after { background: rgba(160,96,26,0.16); }
+  .about-text { font-size: 17px; color: var(--text-dim); line-height: 1.85; font-style: italic; }
+  .about-dua-ar {
+    font-family: 'Amiri', serif;
+    font-size: 22px; color: var(--gold);
+    text-align: center; direction: rtl;
+    line-height: 1.7; margin-bottom: 12px;
+  }
+  .about-dua-tr { font-size: 13px; color: var(--text-dim); text-align: center; font-style: italic; line-height: 1.7; margin-bottom: 4px; }
+  .about-dua-en { font-size: 13px; color: var(--text-dim); text-align: center; opacity: 0.7; line-height: 1.7; }
+
+  /* ══ FOOTER ═══════════════════════════════════════════════ */
+  .amanah-footer {
+    margin-top: 56px;
+    padding: 18px 24px;
+    background: var(--dark2);
+    border-top: 1px solid rgba(201,168,76,0.15);
+    text-align: center;
+  }
+  [data-theme="light"] .amanah-footer { border-top-color: rgba(160,96,26,0.20); }
+  .amanah-footer p { font-size: 13px; color: var(--text-dim); font-style: italic; letter-spacing: 0.04em; }
+  .amanah-footer-link {
+    color: var(--gold);
+    text-decoration: none;
+    font-style: normal;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(201,168,76,0.45);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .amanah-footer-link:hover { color: var(--gold-light); border-bottom-color: var(--gold-light); }
+
+  @media (max-width: 520px) {
+    .header-actions { top: 12px; right: 12px; gap: 6px; }
+    .header-btn { width: 32px; height: 32px; font-size: 14px; }
+    .about-body { padding: 22px 18px 28px; }
+    .about-arabic-h { font-size: 30px; }
+    .about-dua-ar { font-size: 18px; }
+  }
 </style>
 </head>
 <body>
 
 <header>
+  <div class="header-actions">
+    <button class="header-btn" onclick="openAbout()" title="About" aria-label="About">ℹ</button>
+    <button class="header-btn" onclick="openSettings()" title="Settings" aria-label="Settings">⚙</button>
+  </div>
   <div class="arabic-title">القبلة</div>
   <div class="english-title">Al-Qibla · Direction of Prayer</div>
   <div class="divider"></div>
@@ -691,7 +907,7 @@
       <div class="info-item">
         <div class="info-label">Distance to Kaaba</div>
         <div class="info-value" id="distanceValue">—</div>
-        <div class="info-sub">kilometres</div>
+        <div class="info-sub" id="distanceSub">kilometres</div>
       </div>
       <div class="ornament">✦</div>
       <div class="info-item">
@@ -781,6 +997,88 @@
   </div>
 </div>
 
+<!-- ══ SETTINGS ════════════════════════════════════════════ -->
+<div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-panel-head">
+    <span class="settings-panel-title">✦ &nbsp; Settings</span>
+    <button class="settings-close-btn" onclick="closeSettings()">✕</button>
+  </div>
+  <div class="settings-body">
+    <div class="settings-group">
+      <div class="settings-group-label">Appearance</div>
+      <div class="settings-opt" id="optDark" onclick="setTheme('dark')">
+        <span class="settings-opt-icon">🌙</span>
+        <span class="settings-opt-name">Dark</span>
+        <span class="settings-opt-tick">✦</span>
+      </div>
+      <div class="settings-opt" id="optLight" onclick="setTheme('light')">
+        <span class="settings-opt-icon">☀</span>
+        <span class="settings-opt-name">Light</span>
+        <span class="settings-opt-tick">✦</span>
+      </div>
+      <div class="settings-opt" id="optDevice" onclick="setTheme('device')">
+        <span class="settings-opt-icon">⬡</span>
+        <span class="settings-opt-name">Match device</span>
+        <span class="settings-opt-tick">✦</span>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-label">Distance</div>
+      <div class="settings-opt" id="optMetric" onclick="setUnits('metric')">
+        <span class="settings-opt-icon" style="font-size:11px;font-weight:600;">km</span>
+        <span class="settings-opt-name">Metric (km)</span>
+        <span class="settings-opt-tick">✦</span>
+      </div>
+      <div class="settings-opt" id="optImperial" onclick="setUnits('imperial')">
+        <span class="settings-opt-icon" style="font-size:11px;font-weight:600;">mi</span>
+        <span class="settings-opt-name">Imperial (miles)</span>
+        <span class="settings-opt-tick">✦</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ABOUT MODAL ══════════════════════════════════════════ -->
+<div class="modal-backdrop" id="aboutBackdrop" onclick="closeAboutOnBackdrop(event)">
+  <div class="about-modal">
+    <div class="about-modal-head">
+      <span class="about-modal-title">✦ &nbsp; About Qibla View</span>
+      <button class="settings-close-btn" onclick="closeAbout()">✕</button>
+    </div>
+    <div class="about-body">
+      <div class="about-arabic-h">القِبْلَة</div>
+      <div class="divider" style="margin: 14px auto 26px;"></div>
+
+      <div class="about-sec">
+        <div class="about-sec-label">Purpose</div>
+        <p class="about-text">
+          This tool was built to help you connect to Allah ﷻ in your salah. One of the things that has truly deepened my own khushu' is pausing before I stand to pray, and picturing exactly where I am in relation to the Kaaba — which face is before me, how far I am, what lies between us. It transforms the qibla from an abstract direction into something you can feel: a thread stretched across the earth toward the House of Allah.
+        </p>
+      </div>
+
+      <div class="about-sec">
+        <div class="about-sec-label">The Idea</div>
+        <p class="about-text">
+          This was not my idea alone. The seed of it came from my father and my uncle, and I owe them both more than this page can hold. May Allah reward them and accept from them.
+        </p>
+      </div>
+
+      <div class="about-sec">
+        <div class="about-sec-label">Du'ā</div>
+        <div class="about-dua-ar">اللَّهُمَّ اغْفِرْ لَهُمَا وَارْحَمْهُمَا وَعَافِهِمَا وَاعْفُ عَنْهُمَا</div>
+        <p class="about-dua-tr">Allāhumma-ghfir lahumā, wa-rḥamhumā, wa-ʿāfihimā, wa-ʿfu ʿanhumā</p>
+        <p class="about-dua-en">"O Allah, forgive them both, have mercy on them, grant them wellbeing, and pardon them."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════ -->
+<div class="amanah-footer">
+  <p>Powered by <a class="amanah-footer-link" href="https://amanahdigital.co.uk" target="_blank" rel="noopener">AmanahDigital</a></p>
+</div>
+
 <script>
 // Kaaba coordinates (Masjid al-Haram)
 const KAABA_LAT = 21.4225;
@@ -790,6 +1088,78 @@ let map = null;
 let locationMarker = null;
 let kaabaMarker = null;
 let qiblaLine = null;
+let rawDistanceKm = null;
+
+// ── Theme & Units ───────────────────────────────────────────
+let currentTheme = localStorage.getItem('qibla-theme') || 'dark';
+let currentUnits = localStorage.getItem('qibla-units') || 'metric';
+
+function applyTheme(theme) {
+  let effective = theme;
+  if (theme === 'device') {
+    effective = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.setAttribute('data-theme', effective);
+  if (map) {
+    const tp = document.querySelector('.leaflet-tile-pane');
+    if (tp) tp.style.filter = effective === 'light'
+      ? 'brightness(1) saturate(0.85) sepia(0.05)'
+      : 'brightness(0.7) saturate(0.5) sepia(0.2)';
+  }
+}
+
+function setTheme(theme) {
+  currentTheme = theme;
+  localStorage.setItem('qibla-theme', theme);
+  applyTheme(theme);
+  syncSettingsUI();
+}
+
+function setUnits(units) {
+  currentUnits = units;
+  localStorage.setItem('qibla-units', units);
+  updateDistanceDisplay();
+  syncSettingsUI();
+}
+
+function updateDistanceDisplay() {
+  if (rawDistanceKm === null) return;
+  if (currentUnits === 'imperial') {
+    document.getElementById('distanceValue').textContent = Math.round(rawDistanceKm * 0.621371).toLocaleString();
+    document.getElementById('distanceSub').textContent = 'miles';
+  } else {
+    document.getElementById('distanceValue').textContent = Math.round(rawDistanceKm).toLocaleString();
+    document.getElementById('distanceSub').textContent = 'kilometres';
+  }
+}
+
+function syncSettingsUI() {
+  ['Dark','Light','Device'].forEach(t => {
+    document.getElementById('opt' + t)?.classList.toggle('sel', t.toLowerCase() === currentTheme);
+  });
+  document.getElementById('optMetric')?.classList.toggle('sel', currentUnits === 'metric');
+  document.getElementById('optImperial')?.classList.toggle('sel', currentUnits === 'imperial');
+}
+
+function openSettings() {
+  document.getElementById('settingsBackdrop').classList.add('open');
+  document.getElementById('settingsPanel').classList.add('open');
+  syncSettingsUI();
+}
+function closeSettings() {
+  document.getElementById('settingsBackdrop').classList.remove('open');
+  document.getElementById('settingsPanel').classList.remove('open');
+}
+function openAbout() { document.getElementById('aboutBackdrop').classList.add('open'); }
+function closeAbout() { document.getElementById('aboutBackdrop').classList.remove('open'); }
+function closeAboutOnBackdrop(e) { if (e.target === document.getElementById('aboutBackdrop')) closeAbout(); }
+
+// Init theme on load
+applyTheme(currentTheme);
+syncSettingsUI();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (currentTheme === 'device') applyTheme('device');
+});
 
 // Cardinal face descriptions
 const faceInfo = {
@@ -1110,11 +1480,12 @@ async function processCoords(lat, lng, locationName) {
   const bearing = calcBearing(lat, lng, KAABA_LAT, KAABA_LNG);
   const distance = calcDistance(lat, lng, KAABA_LAT, KAABA_LNG);
   const face = bearingToFace(bearing);
+  rawDistanceKm = distance;
 
   document.getElementById('results').classList.add('visible');
   document.getElementById('locationName').textContent = locationName;
   document.getElementById('bearingValue').textContent = bearing.toFixed(1) + '°';
-  document.getElementById('distanceValue').textContent = Math.round(distance).toLocaleString();
+  updateDistanceDisplay();
 
   initMap(lat, lng);
   highlightFace(face);
