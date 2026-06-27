@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>Qibla — Find Your Direction</title>
+<meta name="description" content="Find your Qibla — the bearing, distance, and face of the Kaaba you face in prayer, shown on a map from any city in the world.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="Qibla — Find Your Direction">
+<meta property="og:description" content="Find your Qibla — the bearing, distance, and face of the Kaaba you face in prayer, shown on a map from any city in the world.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://qibla.amanahdigital.co.uk">
+<meta property="og:image" content="https://qibla.amanahdigital.co.uk/images/kaaba-east.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <script>!function(){var t=localStorage.getItem('qibla-theme')||'dark';if(t==='device')t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t)}();</script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -58,7 +66,10 @@
     letter-spacing: 0.05em;
     margin-bottom: 8px;
     line-height: 1.2;
+    cursor: pointer;
+    transition: opacity 0.2s;
   }
+  .arabic-title:hover { opacity: 0.75; }
 
   .english-title {
     font-size: clamp(13px, 2vw, 16px);
@@ -208,6 +219,7 @@
     background: var(--dark2);
     border: 1px solid rgba(201,168,76,0.2);
     flex-wrap: wrap;
+    position: relative;
   }
 
   .info-item {
@@ -233,6 +245,31 @@
     color: var(--text-dim);
     margin-top: 2px;
   }
+
+  .share-btn {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.22);
+    color: var(--text-dim);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 5px 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    line-height: 1;
+  }
+  .share-btn:hover { color: var(--gold); border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.06); }
+  .share-btn.copied { color: var(--gold); border-color: var(--gold); }
+  [data-theme="light"] .share-btn { border-color: rgba(160,96,26,0.28); }
+  [data-theme="light"] .share-btn:hover { border-color: rgba(160,96,26,0.55); background: rgba(160,96,26,0.07); }
+  [data-theme="light"] .share-btn.copied { border-color: var(--gold); }
 
   /* Map — spans full width */
   .map-panel {
@@ -424,17 +461,6 @@
     pointer-events: none;
   }
 
-  .direction-arrow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 2px;
-    background: linear-gradient(180deg, var(--gold), transparent);
-    transform-origin: bottom center;
-    pointer-events: none;
-    transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
   /* Face labels */
   .face-label {
     font-size: 11px;
@@ -538,9 +564,11 @@
       grid-template-columns: 1fr 1fr;
       gap: 16px;
       padding: 20px 16px;
+      padding-top: 36px;
       justify-items: center;
     }
     .ornament { display: none; }
+    .share-btn { font-size: 10px; padding: 4px 8px; letter-spacing: 0.12em; }
     .info-value { font-size: 20px; }
     .info-label { font-size: 10px; letter-spacing: 0.2em; }
 
@@ -836,7 +864,7 @@
     <button class="header-btn" onclick="openAbout()" title="About" aria-label="About">ℹ</button>
     <button class="header-btn" onclick="openSettings()" title="Settings" aria-label="Settings">⚙</button>
   </div>
-  <div class="arabic-title">القبلة</div>
+  <div class="arabic-title" onclick="resetPage()" role="button" tabindex="0" aria-label="Return to start" onkeydown="if(event.key==='Enter'||event.key===' ')resetPage()">القبلة</div>
   <div class="english-title">Al-Qibla · Direction of Prayer</div>
   <div class="divider"></div>
   <div class="subtitle">Find your sacred direction toward the Kaaba in Makkah</div>
@@ -885,6 +913,9 @@
         <div class="info-value" id="faceValue">—</div>
         <div class="info-sub">side of the Kaaba</div>
       </div>
+      <button class="share-btn" id="shareBtn" onclick="shareLocation()" aria-label="Share this result">
+        ↗ &nbsp;Share
+      </button>
     </div>
 
     <!-- Map panel -->
@@ -980,9 +1011,9 @@
 
 <!-- ══ SETTINGS ════════════════════════════════════════════ -->
 <div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
-<div class="settings-panel" id="settingsPanel">
+<div class="settings-panel" id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsPanelTitle">
   <div class="settings-panel-head">
-    <span class="settings-panel-title">✦ &nbsp; Settings</span>
+    <span class="settings-panel-title" id="settingsPanelTitle">✦ &nbsp; Settings</span>
     <button class="settings-close-btn" onclick="closeSettings()">✕</button>
   </div>
   <div class="settings-body">
@@ -1030,9 +1061,9 @@
 
 <!-- ══ ABOUT MODAL ══════════════════════════════════════════ -->
 <div class="modal-backdrop" id="aboutBackdrop" onclick="closeAboutOnBackdrop(event)">
-  <div class="about-modal">
+  <div class="about-modal" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle">
     <div class="about-modal-head">
-      <span class="about-modal-title">✦ &nbsp; About Qibla View</span>
+      <span class="about-modal-title" id="aboutModalTitle">✦ &nbsp; About Qibla View</span>
       <button class="settings-close-btn" onclick="closeAbout()">✕</button>
     </div>
     <div class="about-body">
@@ -1087,7 +1118,7 @@ const NABAWI_LAT = 24.4672;
 const NABAWI_LNG = 39.6112;
 const AQSA_LAT = 31.7762;
 const AQSA_LNG = 35.2354;
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 
 let map = null;
 let locationMarker = null;
@@ -1168,17 +1199,52 @@ function syncSettingsUI() {
   if (cb) cb.checked = showMosques;
 }
 
+// ── Focus trap utility ──────────────────────────────────────
+function trapFocus(container) {
+  const sel = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  function handleTab(e) {
+    if (e.key !== 'Tab') return;
+    const nodes = [...container.querySelectorAll(sel)];
+    if (!nodes.length) return;
+    const first = nodes[0], last = nodes[nodes.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }
+  container.addEventListener('keydown', handleTab);
+  const nodes = [...container.querySelectorAll(sel)];
+  if (nodes.length) nodes[0].focus();
+  return () => container.removeEventListener('keydown', handleTab);
+}
+
+let _focusBeforeSettings = null, _settingsTrapCleanup = null;
+let _focusBeforeAbout = null, _aboutTrapCleanup = null;
+
 function openSettings() {
+  _focusBeforeSettings = document.activeElement;
   document.getElementById('settingsBackdrop').classList.add('open');
   document.getElementById('settingsPanel').classList.add('open');
   syncSettingsUI();
+  setTimeout(() => { _settingsTrapCleanup = trapFocus(document.getElementById('settingsPanel')); }, 50);
 }
 function closeSettings() {
   document.getElementById('settingsBackdrop').classList.remove('open');
   document.getElementById('settingsPanel').classList.remove('open');
+  if (_settingsTrapCleanup) { _settingsTrapCleanup(); _settingsTrapCleanup = null; }
+  if (_focusBeforeSettings) { _focusBeforeSettings.focus(); _focusBeforeSettings = null; }
 }
-function openAbout() { document.getElementById('aboutBackdrop').classList.add('open'); }
-function closeAbout() { document.getElementById('aboutBackdrop').classList.remove('open'); }
+function openAbout() {
+  _focusBeforeAbout = document.activeElement;
+  document.getElementById('aboutBackdrop').classList.add('open');
+  setTimeout(() => { _aboutTrapCleanup = trapFocus(document.querySelector('#aboutBackdrop .about-modal')); }, 50);
+}
+function closeAbout() {
+  document.getElementById('aboutBackdrop').classList.remove('open');
+  if (_aboutTrapCleanup) { _aboutTrapCleanup(); _aboutTrapCleanup = null; }
+  if (_focusBeforeAbout) { _focusBeforeAbout.focus(); _focusBeforeAbout = null; }
+}
 function closeAboutOnBackdrop(e) { if (e.target === document.getElementById('aboutBackdrop')) closeAbout(); }
 
 // Init theme on load
@@ -1663,7 +1729,9 @@ function updatePhoto(face) {
     img.alt = photo.what;
     img.onload = () => { img.style.opacity = '1'; };
     const credit = document.getElementById('photoCredit');
-    credit.innerHTML = `${photo.credit} &mdash; <a href="${photo.creditUrl}" target="_blank" rel="noopener">View source</a>`;
+    credit.innerHTML = photo.credit && photo.creditUrl
+      ? `${photo.credit} &mdash; <a href="${photo.creditUrl}" target="_blank" rel="noopener">View source</a>`
+      : '';
   } else {
     img.style.display = 'none';
     unavail.style.display = 'flex';
@@ -1677,6 +1745,56 @@ function showPhotoFallback() {
 }
 
 document.getElementById('footerVersion').textContent = 'v' + VERSION;
+
+// ── Reset to start ─────────────────────────────────────────
+function resetPage() {
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('cityInput').value = '';
+  setStatus('Type a city name to find your Qibla direction');
+  closeAutocomplete();
+  rawDistanceKm = null;
+  history.replaceState(null, '', location.pathname);
+}
+
+// ── Share / copy link ───────────────────────────────────────
+async function shareLocation() {
+  const url = window.location.href;
+  const city = document.getElementById('locationName').textContent;
+  const bearing = document.getElementById('bearingValue').textContent;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: `Qibla from ${city}`,
+        text: `Qibla direction from ${city}: ${bearing} from North`,
+        url
+      });
+      return;
+    } catch { /* user cancelled — fall through to clipboard */ }
+  }
+
+  try {
+    await navigator.clipboard.writeText(url);
+    showShareFeedback();
+  } catch {
+    // Last resort: select the URL from a temporary input
+    const tmp = document.createElement('input');
+    tmp.value = url;
+    document.body.appendChild(tmp);
+    tmp.select();
+    document.execCommand('copy');
+    document.body.removeChild(tmp);
+    showShareFeedback();
+  }
+}
+
+function showShareFeedback() {
+  const btn = document.getElementById('shareBtn');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '✦ &nbsp;Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2200);
+}
 
 // ── Escape key closes modals ────────────────────────────────
 document.addEventListener('keydown', e => {
