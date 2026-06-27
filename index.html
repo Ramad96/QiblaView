@@ -181,6 +181,24 @@
     letter-spacing: 0.1em;
   }
 
+  .gps-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    padding: 8px 12px;
+    margin-top: 6px;
+    transition: color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .gps-btn:hover:not(:disabled) { color: var(--gold); }
+  .gps-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
   .status-text {
     margin-top: 16px;
     color: var(--text-dim);
@@ -885,6 +903,9 @@
       <button class="search-btn" id="searchBtn" onclick="searchCity()">Find Qibla &#10022;</button>
       <div class="autocomplete-list" id="autocompleteList"></div>
     </div>
+    <div>
+      <button class="gps-btn" id="gpsBtn" onclick="useMyLocation()">⊙ &nbsp;Use my current location</button>
+    </div>
     <div class="status-text" id="statusText">Type a city name to find your Qibla direction</div>
   </div>
 
@@ -1118,7 +1139,7 @@ const NABAWI_LAT = 24.4672;
 const NABAWI_LNG = 39.6112;
 const AQSA_LAT = 31.7762;
 const AQSA_LNG = 35.2354;
-const VERSION = '1.2.1';
+const VERSION = '1.2.2';
 
 let map = null;
 let locationMarker = null;
@@ -1746,6 +1767,48 @@ function showPhotoFallback() {
 }
 
 document.getElementById('footerVersion').textContent = 'v' + VERSION;
+
+// ── GPS / Use My Location ──────────────────────────────────
+function useMyLocation() {
+  const btn = document.getElementById('gpsBtn');
+
+  if (!navigator.geolocation) {
+    setStatus('Geolocation is not supported by your browser.', true);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '⊙ &nbsp;Locating…';
+  setStatus('Requesting your location…');
+
+  navigator.geolocation.getCurrentPosition(
+    async function(position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const name = await reverseGeocode(lat, lng);
+      document.getElementById('cityInput').value = name;
+      btn.disabled = false;
+      btn.innerHTML = '⊙ &nbsp;Use my current location';
+      processCoords(lat, lng, name);
+    },
+    function(err) {
+      let msg;
+      if (err.code === err.PERMISSION_DENIED) {
+        msg = 'Location access denied — please allow it in your browser settings.';
+      } else if (err.code === err.POSITION_UNAVAILABLE) {
+        msg = 'Location unavailable. Please search by city name instead.';
+      } else if (err.code === err.TIMEOUT) {
+        msg = 'Location request timed out. Please try again.';
+      } else {
+        msg = 'Could not get your location. Please search by city name.';
+      }
+      setStatus(msg, true);
+      btn.disabled = false;
+      btn.innerHTML = '⊙ &nbsp;Use my current location';
+    },
+    { timeout: 10000, maximumAge: 60000, enableHighAccuracy: false }
+  );
+}
 
 // ── Reset to start ─────────────────────────────────────────
 function resetPage() {

@@ -10,7 +10,7 @@
 
 ## High Priority Features
 
-- [ ] **"Use My Location" GPS button** — Add a button that calls `navigator.geolocation.getCurrentPosition()` and pipes the result through the existing `reverseGeocode()` + `processCoords()` functions. Most users want their actual current location, not a typed city.
+- [x] **"Use My Location" GPS button** — Add a button that calls `navigator.geolocation.getCurrentPosition()` and pipes the result through the existing `reverseGeocode()` + `processCoords()` functions. Most users want their actual current location, not a typed city.
 - [x] **URL sharing / deep linking** — Support `?city=London` or `?lat=51.5&lng=-0.1` query params so results can be bookmarked and shared. The app currently loses all state on every page load.
 
 ---
