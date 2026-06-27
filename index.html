@@ -95,70 +95,7 @@
     margin-bottom: 40px;
   }
 
-  .input-mode-tabs {
-    display: inline-flex;
-    border: 1px solid rgba(201,168,76,0.25);
-    margin-bottom: 28px;
-    overflow: hidden;
-  }
-
-  .tab-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 13px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    padding: 10px 28px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-right: 1px solid rgba(201,168,76,0.25);
-  }
-  .tab-btn:last-child { border-right: none; }
-  .tab-btn.active {
-    background: rgba(201,168,76,0.12);
-    color: var(--gold);
-  }
-  .tab-btn:hover:not(.active) {
-    color: var(--text);
-    background: rgba(201,168,76,0.05);
-  }
-
-  /* GPS panel */
-  .mode-panel { display: none; }
-  .mode-panel.active { display: block; }
-
-  .locate-btn {
-    background: transparent;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    letter-spacing: 0.15em;
-    padding: 16px 48px;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .locate-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--gold);
-    transform: translateY(100%);
-    transition: transform 0.4s ease;
-    z-index: -1;
-  }
-
-  .locate-btn:hover { color: var(--dark); }
-  .locate-btn:hover::before { transform: translateY(0); }
-  .locate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  /* Manual search panel */
+  /* Search panel */
   .search-row {
     display: flex;
     gap: 0;
@@ -307,14 +244,60 @@
   }
 
   .panel-label {
-    padding: 16px 20px;
+    padding: 12px 20px;
     font-size: 11px;
     letter-spacing: 0.35em;
     text-transform: uppercase;
     color: var(--text-dim);
     border-bottom: 1px solid rgba(201,168,76,0.1);
     background: var(--dark3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
   }
+
+  .mosque-toggle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    letter-spacing: 0.15em;
+    font-size: 10px;
+    color: var(--text-dim);
+    transition: color 0.2s;
+  }
+  .mosque-toggle:hover { color: var(--text); }
+  .mosque-toggle input[type="checkbox"] {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgba(201,168,76,0.4);
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .mosque-toggle input[type="checkbox"]:checked {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+  }
+  .mosque-toggle input[type="checkbox"]:checked::after {
+    content: '✦';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    color: var(--gold);
+    line-height: 14px;
+    text-align: center;
+  }
+  [data-theme="light"] .mosque-toggle input[type="checkbox"] { border-color: rgba(160,96,26,0.4); }
+  [data-theme="light"] .mosque-toggle input[type="checkbox"]:checked { background: rgba(160,96,26,0.10); border-color: var(--gold); }
 
   #map {
     height: 450px;
@@ -535,24 +518,6 @@
       gap: 20px;
     }
 
-    /* Tabs */
-    .input-mode-tabs {
-      width: 100%;
-      display: flex;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 10px 8px;
-      font-size: 11px;
-      letter-spacing: 0.15em;
-    }
-
-    /* Locate button */
-    .locate-btn {
-      padding: 14px 28px;
-      font-size: 16px;
-    }
-
     /* Search row */
     .search-row {
       max-width: 100%;
@@ -619,6 +584,32 @@
     .photo-desc { font-size: 12px; }
   }
 
+  .disclaimer {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 24px;
+    border: 1px solid rgba(201,168,76,0.12);
+    background: var(--dark2);
+  }
+
+  .disclaimer-icon {
+    color: var(--gold-dim);
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 5px;
+    opacity: 0.6;
+  }
+
+  .disclaimer p {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.8;
+  }
+
+  [data-theme="light"] .disclaimer { border-color: rgba(160,96,26,0.16); }
+
   /* Leaflet dark theme overrides */
   .leaflet-tile-pane { filter: brightness(0.7) saturate(0.5) sepia(0.2); }
   .leaflet-control-attribution { background: rgba(13,12,10,0.8) !important; color: var(--text-dim) !important; }
@@ -644,10 +635,6 @@
   [data-theme="light"] body::before { opacity: 0.08; }
   [data-theme="light"] header { border-bottom-color: rgba(160,96,26,0.18); }
   [data-theme="light"] .divider { background: linear-gradient(90deg,transparent,#A0601A,transparent); }
-  [data-theme="light"] .input-mode-tabs { border-color: rgba(160,96,26,0.32); }
-  [data-theme="light"] .tab-btn { border-right-color: rgba(160,96,26,0.32); }
-  [data-theme="light"] .tab-btn.active { background: rgba(160,96,26,0.10); }
-  [data-theme="light"] .tab-btn:hover:not(.active) { background: rgba(160,96,26,0.05); }
   [data-theme="light"] .search-row { border-color: rgba(160,96,26,0.42); }
   [data-theme="light"] .search-btn { border-left-color: rgba(160,96,26,0.42); }
   [data-theme="light"] .search-btn:hover { background: rgba(160,96,26,0.08); }
@@ -661,7 +648,6 @@
   [data-theme="light"] .panel-label { border-bottom-color: rgba(160,96,26,0.14); }
   [data-theme="light"] .face-label.inactive { border-color: rgba(160,96,26,0.22); }
   [data-theme="light"] .face-label.active { border-color: var(--gold); background: rgba(160,96,26,0.10); }
-  [data-theme="light"] .locate-btn:hover { color: #F5F0E8; }
   [data-theme="light"] .leaflet-tile-pane { filter: brightness(1) saturate(0.85) sepia(0.05) !important; }
   [data-theme="light"] .leaflet-control-attribution { background: rgba(245,240,232,0.92) !important; color: rgba(28,22,16,0.55) !important; }
   [data-theme="light"] .leaflet-control-zoom a { background: #EDE7DB !important; color: var(--gold) !important; border-color: rgba(160,96,26,0.28) !important; }
@@ -822,6 +808,7 @@
   }
   [data-theme="light"] .amanah-footer { border-top-color: rgba(160,96,26,0.20); }
   .amanah-footer p { font-size: 13px; color: var(--text-dim); font-style: italic; letter-spacing: 0.04em; }
+  .amanah-footer-version { font-size: 11px; margin-top: 6px; letter-spacing: 0.2em; opacity: 0.45; }
   .amanah-footer-link {
     color: var(--gold);
     text-decoration: none;
@@ -857,37 +844,20 @@
 
 <div class="container">
   <div class="locate-section">
-    <!-- Mode tabs -->
-    <div class="input-mode-tabs">
-      <button class="tab-btn active" id="tabGps" onclick="switchTab('gps')">&#8853; &nbsp;Use My Location</button>
-      <button class="tab-btn" id="tabManual" onclick="switchTab('manual')">&#9998; &nbsp;Enter a City</button>
+    <div class="search-row" id="searchRow">
+      <input
+        class="search-input"
+        id="cityInput"
+        type="text"
+        placeholder="e.g. London, Istanbul, Jakarta..."
+        autocomplete="off"
+        oninput="onCityInput()"
+        onkeydown="onCityKeydown(event)"
+      />
+      <button class="search-btn" id="searchBtn" onclick="searchCity()">Find Qibla &#10022;</button>
+      <div class="autocomplete-list" id="autocompleteList"></div>
     </div>
-
-    <!-- GPS panel -->
-    <div class="mode-panel active" id="panelGps">
-      <button class="locate-btn" id="locateBtn" onclick="findLocation()">
-        &#10022; Find My Qibla Direction
-      </button>
-    </div>
-
-    <!-- Manual search panel -->
-    <div class="mode-panel" id="panelManual">
-      <div class="search-row" id="searchRow">
-        <input
-          class="search-input"
-          id="cityInput"
-          type="text"
-          placeholder="e.g. London, Istanbul, Jakarta..."
-          autocomplete="off"
-          oninput="onCityInput()"
-          onkeydown="onCityKeydown(event)"
-        />
-        <button class="search-btn" id="searchBtn" onclick="searchCity()">Find Qibla &#10022;</button>
-        <div class="autocomplete-list" id="autocompleteList"></div>
-      </div>
-    </div>
-
-    <div class="status-text" id="statusText">Choose a method above to find your Qibla direction</div>
+    <div class="status-text" id="statusText">Type a city name to find your Qibla direction</div>
   </div>
 
   <div class="results" id="results">
@@ -919,7 +889,13 @@
 
     <!-- Map panel -->
     <div class="map-panel">
-      <div class="panel-label">✦ &nbsp; Map — Your Line to the Kaaba</div>
+      <div class="panel-label">
+        <span>✦ &nbsp; Map — Your Line to the Kaaba</span>
+        <label class="mosque-toggle">
+          <input type="checkbox" id="mosqueCheckbox" onchange="setMosques(this.checked)">
+          <span>Show Masjid An-Nabawi &amp; Al-Aqsa</span>
+        </label>
+      </div>
       <div id="map"></div>
     </div>
 
@@ -994,6 +970,11 @@
 
       </div>
     </div>
+    <!-- Disclaimer -->
+    <div class="disclaimer" style="grid-column:1/-1;">
+      <span class="disclaimer-icon">&#9670;</span>
+      <p>The bearing and facing direction shown are a calculated approximation — intended to identify the most likely face or corner of the Kaaba you are oriented toward from your location. The purpose of this tool is not to replace a precision compass for salah, but to help you picture yourself standing before the Kaaba: to see which wall faces you, what stands between you and it, and to feel that connection across the distance.</p>
+    </div>
   </div>
 </div>
 
@@ -1065,6 +1046,16 @@
       </div>
 
       <div class="about-sec">
+        <div class="about-sec-label">About the calculations</div>
+        <p class="about-text">
+          The bearing shown is calculated using the great-circle formula — the shortest path across the surface of the earth between your location and the Kaaba. From that bearing, the tool determines which face or corner of the Kaaba is most likely oriented toward you. These are approximations. The Kaaba's corners are not perfectly aligned to the cardinal directions, local terrain affects nothing here, and a few degrees either way can shift the result. The bearing itself is accurate; the face classification is a best estimate across eight directions.
+        </p>
+        <p class="about-text" style="margin-top:12px;">
+          This is intentional. The goal is not a GPS-precise prayer direction — your local mosque or a dedicated qibla compass serves that need. The goal here is contemplative: to give you enough to close your eyes before salah and picture it. Which wall of the Kaaba faces you. How far you are. What lies along that line. To feel the thread, not just follow an arrow.
+        </p>
+      </div>
+
+      <div class="about-sec">
         <div class="about-sec-label">Du'ā</div>
         <div class="about-dua-ar">اللَّهُمَّ اغْفِرْ لَهُمَا وَارْحَمْهُمَا وَعَافِهِمَا وَاعْفُ عَنْهُمَا</div>
         <p class="about-dua-tr">Allāhumma-ghfir lahumā, wa-rḥamhumā, wa-ʿāfihimā, wa-ʿfu ʿanhumā</p>
@@ -1077,22 +1068,32 @@
 <!-- ══ FOOTER ════════════════════════════════════════════════ -->
 <div class="amanah-footer">
   <p>Powered by <a class="amanah-footer-link" href="https://amanahdigital.co.uk" target="_blank" rel="noopener">AmanahDigital</a></p>
+  <p class="amanah-footer-version" id="footerVersion"></p>
 </div>
 
 <script>
 // Kaaba coordinates (Masjid al-Haram)
 const KAABA_LAT = 21.4225;
 const KAABA_LNG = 39.8262;
+const NABAWI_LAT = 24.4672;
+const NABAWI_LNG = 39.6112;
+const AQSA_LAT = 31.7762;
+const AQSA_LNG = 35.2354;
+const VERSION = '1.1.0';
 
 let map = null;
 let locationMarker = null;
 let kaabaMarker = null;
 let qiblaLine = null;
+let qiblaLineShadow = null;
 let rawDistanceKm = null;
+let nabawiBMarker = null;
+let aqsaMarker = null;
 
 // ── Theme & Units ───────────────────────────────────────────
 let currentTheme = localStorage.getItem('qibla-theme') || 'dark';
 let currentUnits = localStorage.getItem('qibla-units') || 'metric';
+let showMosques = localStorage.getItem('qibla-mosques') !== 'false';
 
 function applyTheme(theme) {
   let effective = theme;
@@ -1122,6 +1123,21 @@ function setUnits(units) {
   syncSettingsUI();
 }
 
+function setMosques(show) {
+  showMosques = show;
+  localStorage.setItem('qibla-mosques', show);
+  if (map && nabawiBMarker && aqsaMarker) {
+    if (show) {
+      nabawiBMarker.addTo(map);
+      aqsaMarker.addTo(map);
+    } else {
+      map.removeLayer(nabawiBMarker);
+      map.removeLayer(aqsaMarker);
+    }
+  }
+  syncSettingsUI();
+}
+
 function updateDistanceDisplay() {
   if (rawDistanceKm === null) return;
   if (currentUnits === 'imperial') {
@@ -1139,6 +1155,8 @@ function syncSettingsUI() {
   });
   document.getElementById('optMetric')?.classList.toggle('sel', currentUnits === 'metric');
   document.getElementById('optImperial')?.classList.toggle('sel', currentUnits === 'imperial');
+  const cb = document.getElementById('mosqueCheckbox');
+  if (cb) cb.checked = showMosques;
 }
 
 function openSettings() {
@@ -1294,11 +1312,46 @@ function initMap(lat, lng) {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap'
     }).addTo(map);
+
+    function makeMosqueIcon(label) {
+      return L.divIcon({
+        html: `<div style="display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.7));">
+          <div style="width:20px;height:20px;background:#0f2a1a;border:2px solid #4caf7d;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#4caf7d;font-size:10px;box-shadow:0 0 10px rgba(76,175,125,0.8);">☽</div>
+          <div style="margin-top:3px;background:rgba(10,24,16,0.96);color:#6fcf97;font-size:9px;font-weight:bold;padding:2px 6px;border:1px solid rgba(76,175,125,0.5);white-space:nowrap;font-family:Georgia,serif;letter-spacing:0.03em;">${label}</div>
+        </div>`,
+        iconSize: [130, 42],
+        iconAnchor: [65, 10],
+        popupAnchor: [0, -12],
+        className: ''
+      });
+    }
+
+    nabawiBMarker = L.marker([NABAWI_LAT, NABAWI_LNG], { icon: makeMosqueIcon('Masjid An-Nabawi') })
+      .bindPopup(`<div style="font-family:Georgia,serif;min-width:190px;">
+        <div style="font-size:17px;color:#1a6e3a;margin-bottom:2px;">المسجد النبوي</div>
+        <div style="font-size:13px;font-weight:bold;margin-bottom:6px;">Al-Masjid An-Nabawi</div>
+        <div style="font-size:11px;color:#666;margin-bottom:5px;">&#128205; Madinah, Saudi Arabia</div>
+        <div style="font-size:12px;color:#333;line-height:1.6;">The second holiest site in Islam. Built by the Prophet Muhammad &#65018; himself in 1 AH. His blessed tomb rests within its walls.</div>
+      </div>`);
+
+    aqsaMarker = L.marker([AQSA_LAT, AQSA_LNG], { icon: makeMosqueIcon('Masjid Al-Aqsa') })
+      .bindPopup(`<div style="font-family:Georgia,serif;min-width:190px;">
+        <div style="font-size:17px;color:#1a6e3a;margin-bottom:2px;">المسجد الأقصى</div>
+        <div style="font-size:13px;font-weight:bold;margin-bottom:6px;">Al-Masjid Al-Aqsa</div>
+        <div style="font-size:11px;color:#666;margin-bottom:5px;">&#128205; Jerusalem (Al-Quds)</div>
+        <div style="font-size:12px;color:#333;line-height:1.6;">The third holiest site in Islam and the first Qibla. The destination of the Prophet's &#65018; night journey (Al-Isra), from where he ascended to the heavens (Al-Mi'raj).</div>
+      </div>`);
+
+    if (showMosques) {
+      nabawiBMarker.addTo(map);
+      aqsaMarker.addTo(map);
+    }
   }
 
   // Clear old layers
   if (locationMarker) map.removeLayer(locationMarker);
   if (kaabaMarker) map.removeLayer(kaabaMarker);
+  if (qiblaLineShadow) map.removeLayer(qiblaLineShadow);
   if (qiblaLine) map.removeLayer(qiblaLine);
 
   // Custom icons
@@ -1319,11 +1372,19 @@ function initMap(lat, lng) {
 
   // Geodesic line (great circle approximation)
   const points = geodesicPoints(lat, lng, KAABA_LAT, KAABA_LNG, 100);
+  // Shadow stroke underneath for contrast against light and dark tiles
+  qiblaLineShadow = L.polyline(points, {
+    color: '#000',
+    weight: 6,
+    opacity: 0.35,
+    dashArray: '8, 10'
+  }).addTo(map);
+
   qiblaLine = L.polyline(points, {
     color: '#C9A84C',
-    weight: 2,
-    opacity: 0.8,
-    dashArray: '6, 8'
+    weight: 3,
+    opacity: 1,
+    dashArray: '8, 10'
   }).addTo(map);
 
   map.fitBounds([[lat, lng], [KAABA_LAT, KAABA_LNG]], { padding: [40,40] });
@@ -1351,18 +1412,6 @@ function geodesicPoints(lat1, lng1, lat2, lng2, n) {
   return points;
 }
 
-// ── Tab switching ──────────────────────────────────────────
-function switchTab(mode) {
-  document.getElementById('tabGps').classList.toggle('active', mode === 'gps');
-  document.getElementById('tabManual').classList.toggle('active', mode === 'manual');
-  document.getElementById('panelGps').classList.toggle('active', mode === 'gps');
-  document.getElementById('panelManual').classList.toggle('active', mode === 'manual');
-  document.getElementById('statusText').textContent = mode === 'gps'
-    ? 'Click the button to use your device\'s location'
-    : 'Type a city name and select it from the list';
-  document.getElementById('statusText').className = 'status-text';
-}
-
 // ── Autocomplete ───────────────────────────────────────────
 let autocompleteResults = [];
 let highlightedIndex = -1;
@@ -1371,15 +1420,38 @@ let debounceTimer = null;
 async function onCityInput() {
   const q = document.getElementById('cityInput').value.trim();
   clearTimeout(debounceTimer);
-  if (q.length < 2) { closeAutocomplete(); return; }
-  debounceTimer = setTimeout(() => fetchSuggestions(q), 320);
+  if (q.length < 3) { closeAutocomplete(); return; }
+  debounceTimer = setTimeout(() => fetchSuggestions(q), 400);
+}
+
+const PLACE_TYPES = new Set([
+  'city', 'town', 'village', 'municipality', 'borough',
+  'county', 'state_district', 'state', 'country', 'district',
+  'region', 'province', 'hamlet', 'suburb', 'administrative'
+]);
+
+function formatPlace(item) {
+  const a = item.address || {};
+  const primary = a.city || a.town || a.village || a.hamlet || a.municipality ||
+                  a.county || a.state_district || a.state || a.country ||
+                  item.display_name.split(',')[0].trim();
+  const country = a.country || '';
+  const region = a.state || a.county || '';
+  const secondary = (region && region !== primary && region !== country)
+    ? `${region}, ${country}`
+    : country;
+  return { primary, secondary };
 }
 
 async function fetchSuggestions(q) {
   try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1`;
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=10&addressdetails=1`;
     const r = await fetch(url, { headers: { 'Accept-Language': 'en' } });
-    autocompleteResults = await r.json();
+    const data = await r.json();
+    autocompleteResults = data.filter(item =>
+      (item.class === 'place' && PLACE_TYPES.has(item.type)) ||
+      (item.class === 'boundary' && item.type === 'administrative')
+    ).slice(0, 5);
     renderAutocomplete();
   } catch { closeAutocomplete(); }
 }
@@ -1389,9 +1461,8 @@ function renderAutocomplete() {
   highlightedIndex = -1;
   if (!autocompleteResults.length) { closeAutocomplete(); return; }
   list.innerHTML = autocompleteResults.map((item, i) => {
-    const name = item.display_name.split(',').slice(0,3).join(', ');
-    const type = item.type || item.class || '';
-    return `<div class="autocomplete-item" data-index="${i}" onmousedown="selectSuggestion(${i})">${name}<span class="place-type">${type}</span></div>`;
+    const { primary, secondary } = formatPlace(item);
+    return `<div class="autocomplete-item" data-index="${i}" onmousedown="selectSuggestion(${i})">${primary}${secondary ? `<span class="place-type">${secondary}</span>` : ''}</div>`;
   }).join('');
   list.classList.add('open');
 }
@@ -1432,10 +1503,10 @@ function updateHighlight(items) {
 function selectSuggestion(index) {
   const item = autocompleteResults[index];
   if (!item) return;
-  const name = item.display_name.split(',').slice(0,3).join(', ');
-  document.getElementById('cityInput').value = name;
+  const { primary } = formatPlace(item);
+  document.getElementById('cityInput').value = primary;
   closeAutocomplete();
-  processCoords(parseFloat(item.lat), parseFloat(item.lon), name.split(',')[0].trim());
+  processCoords(parseFloat(item.lat), parseFloat(item.lon), primary);
 }
 
 // ── Manual city search ─────────────────────────────────────
@@ -1593,31 +1664,7 @@ function showPhotoFallback() {
   document.getElementById('photoUnavailable').style.display = 'flex';
 }
 
-async function findLocation() {
-  const btn = document.getElementById('locateBtn');
-
-  if (!navigator.geolocation) {
-    setStatus('Geolocation is not supported by your browser. Try the "Enter a City" tab.', true);
-    return;
-  }
-
-  btn.disabled = true;
-  setStatus('Finding your location...');
-
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    const locationName = await reverseGeocode(lat, lng);
-    await processCoords(lat, lng, locationName);
-    btn.textContent = '&#10022; Update Location';
-    btn.disabled = false;
-  }, (err) => {
-    let msg = 'Unable to retrieve location.';
-    if (err.code === 1) msg = 'Location access denied. Try the "Enter a City" tab instead.';
-    setStatus(msg, true);
-    btn.disabled = false;
-  }, { enableHighAccuracy: true, timeout: 10000 });
-}
+document.getElementById('footerVersion').textContent = 'v' + VERSION;
 </script>
 </body>
 </html>
