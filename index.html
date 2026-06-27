@@ -1118,7 +1118,7 @@ const NABAWI_LAT = 24.4672;
 const NABAWI_LNG = 39.6112;
 const AQSA_LAT = 31.7762;
 const AQSA_LNG = 35.2354;
-const VERSION = '1.2.0';
+const VERSION = '1.2.1';
 
 let map = null;
 let locationMarker = null;
@@ -1561,6 +1561,7 @@ function onCityKeydown(e) {
     updateHighlight(items);
   } else if (e.key === 'Enter') {
     e.preventDefault();
+    clearTimeout(debounceTimer);
     if (highlightedIndex >= 0 && autocompleteResults[highlightedIndex]) {
       selectSuggestion(highlightedIndex);
     } else {
