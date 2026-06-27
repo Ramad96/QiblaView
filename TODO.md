@@ -25,6 +25,6 @@
 
 ## Low Priority / Enhancements
 
-- [ ] **Mobile compass integration** — Use the `DeviceOrientationEvent` API on mobile to show a live needle pointing toward Qibla. Extremely useful for someone standing in a room trying to find the direction in real time.
-- [ ] **Prayer times** — Show today's prayer times for the searched city using a free API (e.g. aladhan.com). A natural companion to the Qibla direction for someone preparing for salah.
+- [x] **Mobile compass integration** — Use the `DeviceOrientationEvent` API on mobile to show a live needle pointing toward Qibla. Extremely useful for someone standing in a room trying to find the direction in real time.
+- [x] **Prayer times** — Show today's prayer times for the searched city using a free API (e.g. aladhan.com). A natural companion to the Qibla direction for someone preparing for salah.
 - [x] **Modal accessibility (focus trapping + ARIA)** — Modals should trap Tab focus inside while open. Both modals also need `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` pointing to their title element.

@@ -873,6 +873,116 @@
     .about-arabic-h { font-size: 30px; }
     .about-dua-ar { font-size: 18px; }
   }
+
+  /* ══ PRAYER TIMES ═══════════════════════════════════════════ */
+  .prayer-times-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .prayer-time-item {
+    padding: 22px 10px;
+    text-align: center;
+    border-right: 1px solid rgba(201,168,76,0.08);
+    transition: background 0.3s;
+  }
+  .prayer-time-item:last-child { border-right: none; }
+  .prayer-time-item.next-prayer { background: rgba(201,168,76,0.07); }
+  .prayer-arabic {
+    font-family: 'Amiri', serif;
+    font-size: 15px;
+    color: var(--gold);
+    margin-bottom: 5px;
+    line-height: 1;
+  }
+  .prayer-name {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .prayer-time-val {
+    font-size: 20px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .prayer-time-item.next-prayer .prayer-time-val { color: var(--gold); }
+  .prayer-next-tag {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 5px;
+    opacity: 0.8;
+  }
+  .prayer-footer {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    padding: 8px 18px;
+    border-top: 1px solid rgba(201,168,76,0.08);
+    text-align: right;
+    opacity: 0.7;
+  }
+  [data-theme="light"] .prayer-time-item { border-right-color: rgba(160,96,26,0.12); }
+  [data-theme="light"] .prayer-time-item.next-prayer { background: rgba(160,96,26,0.06); }
+  [data-theme="light"] .prayer-footer { border-top-color: rgba(160,96,26,0.12); }
+  @media (max-width: 700px) {
+    .prayer-times-grid { grid-template-columns: repeat(3, 1fr); }
+    .prayer-time-item:nth-child(3) { border-right: none; }
+    .prayer-time-item { padding: 16px 8px; }
+    .prayer-time-val { font-size: 17px; }
+    .prayer-arabic { font-size: 13px; }
+  }
+
+  /* ══ LIVE COMPASS ════════════════════════════════════════════ */
+  .compass-viewer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px;
+    gap: 16px;
+  }
+  .compass-svg-wrap {
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.12));
+  }
+  #compassSvg {
+    transition: transform 0.12s linear;
+    transform-origin: center center;
+    display: block;
+  }
+  #qiblaNeedle {
+    transform-origin: 100px 100px;
+    transition: transform 0.12s linear;
+  }
+  .compass-enable-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .compass-enable-btn:hover { background: rgba(201,168,76,0.1); }
+  .compass-heading-display {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-align: center;
+  }
+  .compass-hint {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-style: italic;
+    text-align: center;
+    max-width: 280px;
+    line-height: 1.6;
+  }
+  [data-theme="light"] .compass-enable-btn { border-color: rgba(160,96,26,0.4); }
 </style>
 </head>
 <body>
@@ -1022,6 +1132,56 @@
 
       </div>
     </div>
+    <!-- Prayer Times panel -->
+    <div class="kaaba-panel" id="prayerPanel" style="display:none; grid-column:1/-1;">
+      <div class="panel-label">✦ &nbsp; Today's Prayer Times</div>
+      <div class="prayer-times-grid" id="prayerTimesGrid"></div>
+      <div class="prayer-footer" id="prayerFooter"></div>
+    </div>
+
+    <!-- Live Compass panel -->
+    <div class="kaaba-panel" id="compassPanel" style="display:none; grid-column:1/-1;">
+      <div class="panel-label">✦ &nbsp; Live Qibla Compass</div>
+      <div class="compass-viewer">
+        <div id="compassRequest" style="display:none; text-align:center;">
+          <p class="compass-hint" style="margin-bottom:16px;">Tap to enable your device compass sensor</p>
+          <button class="compass-enable-btn" onclick="requestCompassPermission()">Enable Compass</button>
+        </div>
+        <div id="compassDisplay" style="display:none;">
+          <div class="compass-svg-wrap">
+            <svg id="compassSvg" viewBox="0 0 200 200" width="200" height="200" aria-label="Qibla compass">
+              <circle cx="100" cy="100" r="90" fill="rgba(13,12,10,0.85)" stroke="rgba(201,168,76,0.3)" stroke-width="1.5"/>
+              <circle cx="100" cy="100" r="74" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="0.8"/>
+              <!-- Cardinal ticks -->
+              <line x1="100" y1="10" x2="100" y2="24" stroke="#C9A84C" stroke-width="2.5"/>
+              <line x1="190" y1="100" x2="176" y2="100" stroke="rgba(201,168,76,0.5)" stroke-width="1.5"/>
+              <line x1="100" y1="190" x2="100" y2="176" stroke="rgba(201,168,76,0.5)" stroke-width="1.5"/>
+              <line x1="10" y1="100" x2="24" y2="100" stroke="rgba(201,168,76,0.5)" stroke-width="1.5"/>
+              <!-- Diagonal ticks -->
+              <line x1="163.6" y1="36.4" x2="159.4" y2="40.6" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <line x1="163.6" y1="163.6" x2="159.4" y2="159.4" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <line x1="36.4" y1="163.6" x2="40.6" y2="159.4" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <line x1="36.4" y1="36.4" x2="40.6" y2="40.6" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <!-- Cardinal labels -->
+              <text x="100" y="46" text-anchor="middle" dominant-baseline="middle" fill="#C9A84C" font-size="13" font-family="Cormorant Garamond,serif" font-weight="600">N</text>
+              <text x="157" y="100" text-anchor="middle" dominant-baseline="middle" fill="rgba(201,168,76,0.55)" font-size="11" font-family="Cormorant Garamond,serif">E</text>
+              <text x="100" y="157" text-anchor="middle" dominant-baseline="middle" fill="rgba(201,168,76,0.55)" font-size="11" font-family="Cormorant Garamond,serif">S</text>
+              <text x="43" y="100" text-anchor="middle" dominant-baseline="middle" fill="rgba(201,168,76,0.55)" font-size="11" font-family="Cormorant Garamond,serif">W</text>
+              <!-- Qibla needle -->
+              <g id="qiblaNeedle">
+                <polygon points="100,26 96,100 100,88 104,100" fill="#C9A84C" opacity="0.95"/>
+                <polygon points="100,174 96,100 100,112 104,100" fill="rgba(201,168,76,0.2)"/>
+                <circle cx="100" cy="100" r="7" fill="#1E1B16" stroke="#C9A84C" stroke-width="1.5"/>
+                <circle cx="100" cy="100" r="3" fill="#C9A84C"/>
+              </g>
+            </svg>
+          </div>
+          <div class="compass-heading-display">Heading: <span id="compassHeadingText">—</span>°</div>
+          <p class="compass-hint">Rotate device until needle points up to face Qibla</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Disclaimer -->
     <div class="disclaimer" style="grid-column:1/-1;">
       <span class="disclaimer-icon">&#9670;</span>
@@ -1139,7 +1299,7 @@ const NABAWI_LAT = 24.4672;
 const NABAWI_LNG = 39.6112;
 const AQSA_LAT = 31.7762;
 const AQSA_LNG = 35.2354;
-const VERSION = '1.2.2';
+const VERSION = '1.2.3';
 
 let map = null;
 let locationMarker = null;
@@ -1149,6 +1309,11 @@ let qiblaLineShadow = null;
 let rawDistanceKm = null;
 let nabawiBMarker = null;
 let aqsaMarker = null;
+
+// Compass state
+let qiblaBearing = null;
+let compassHeading = null;
+let orientationListener = null;
 
 // ── Theme & Units ───────────────────────────────────────────
 let currentTheme = localStorage.getItem('qibla-theme') || 'dark';
@@ -1649,6 +1814,7 @@ async function processCoords(lat, lng, locationName) {
   const distance = calcDistance(lat, lng, KAABA_LAT, KAABA_LNG);
   const face = bearingToFace(bearing);
   rawDistanceKm = distance;
+  qiblaBearing = bearing;
 
   document.getElementById('results').classList.add('visible');
   document.getElementById('locationName').textContent = locationName;
@@ -1661,6 +1827,9 @@ async function processCoords(lat, lng, locationName) {
 
   const params = new URLSearchParams({ city: locationName, lat: lat.toFixed(5), lng: lng.toFixed(5) });
   history.replaceState(null, '', '?' + params.toString());
+
+  fetchPrayerTimes(lat, lng);
+  initCompass();
 }
 
 // ── Photo data ─────────────────────────────────────────────
@@ -1813,10 +1982,18 @@ function useMyLocation() {
 // ── Reset to start ─────────────────────────────────────────
 function resetPage() {
   document.getElementById('results').classList.remove('visible');
+  document.getElementById('prayerPanel').style.display = 'none';
+  document.getElementById('compassPanel').style.display = 'none';
   document.getElementById('cityInput').value = '';
   setStatus('Type a city name to find your Qibla direction');
   closeAutocomplete();
   rawDistanceKm = null;
+  qiblaBearing = null;
+  if (orientationListener) {
+    window.removeEventListener('deviceorientation', orientationListener, true);
+    orientationListener = null;
+  }
+  compassHeading = null;
   history.replaceState(null, '', location.pathname);
 }
 
@@ -1866,6 +2043,133 @@ document.addEventListener('keydown', e => {
   if (document.getElementById('settingsPanel').classList.contains('open')) closeSettings();
   else if (document.getElementById('aboutBackdrop').classList.contains('open')) closeAbout();
 });
+
+// ── Prayer Times ───────────────────────────────────────────
+const PRAYERS = [
+  { key: 'Fajr',    arabic: 'الفجر',    label: 'Fajr' },
+  { key: 'Sunrise', arabic: 'الشروق',   label: 'Sunrise' },
+  { key: 'Dhuhr',   arabic: 'الظهر',    label: 'Dhuhr' },
+  { key: 'Asr',     arabic: 'العصر',    label: 'Asr' },
+  { key: 'Maghrib', arabic: 'المغرب',   label: 'Maghrib' },
+  { key: 'Isha',    arabic: 'العشاء',   label: 'Isha' },
+];
+
+function timeToMinutes(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function formatTime12(t) {
+  if (!t) return '—';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h < 12 ? 'am' : 'pm';
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function findNextPrayer(timings, tz) {
+  try {
+    const nowStr = new Date().toLocaleTimeString('en-GB', {
+      timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    const nowMin = timeToMinutes(nowStr);
+    for (const p of PRAYERS) {
+      if (timings[p.key] && timeToMinutes(timings[p.key]) > nowMin) return p.key;
+    }
+    return 'Fajr'; // past Isha — next is Fajr tomorrow
+  } catch { return null; }
+}
+
+async function fetchPrayerTimes(lat, lng) {
+  const panel = document.getElementById('prayerPanel');
+  const grid = document.getElementById('prayerTimesGrid');
+  try {
+    const ts = Math.floor(Date.now() / 1000);
+    const r = await fetch(`https://api.aladhan.com/v1/timings/${ts}?latitude=${lat}&longitude=${lng}&method=3`);
+    const data = await r.json();
+    if (data.code !== 200 || !data.data) { panel.style.display = 'none'; return; }
+
+    const timings = data.data.timings;
+    const tz = data.data.meta.timezone;
+    const nextKey = findNextPrayer(timings, tz);
+
+    grid.innerHTML = PRAYERS.map(p => {
+      const isNext = p.key === nextKey;
+      return `<div class="prayer-time-item${isNext ? ' next-prayer' : ''}">
+        <div class="prayer-arabic">${p.arabic}</div>
+        <div class="prayer-name">${p.label}</div>
+        <div class="prayer-time-val">${formatTime12(timings[p.key])}</div>
+        ${isNext ? '<div class="prayer-next-tag">Next</div>' : ''}
+      </div>`;
+    }).join('');
+
+    document.getElementById('prayerFooter').textContent =
+      `${tz.replace('_',' ')} · Muslim World League`;
+    panel.style.display = '';
+  } catch {
+    panel.style.display = 'none';
+  }
+}
+
+// ── Mobile Compass ─────────────────────────────────────────
+function initCompass() {
+  if (typeof window.DeviceOrientationEvent === 'undefined') return;
+  const panel = document.getElementById('compassPanel');
+  panel.style.display = '';
+
+  if (orientationListener) {
+    // Already running — bearing updated globally, just refresh display
+    updateCompassDisplay();
+    return;
+  }
+
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    // iOS 13+ — needs explicit permission tap
+    document.getElementById('compassRequest').style.display = '';
+    document.getElementById('compassDisplay').style.display = 'none';
+  } else {
+    startOrientationListener();
+  }
+}
+
+function requestCompassPermission() {
+  DeviceOrientationEvent.requestPermission()
+    .then(state => {
+      if (state === 'granted') startOrientationListener();
+    })
+    .catch(() => startOrientationListener());
+}
+
+function startOrientationListener() {
+  document.getElementById('compassRequest').style.display = 'none';
+  document.getElementById('compassDisplay').style.display = '';
+  if (orientationListener) window.removeEventListener('deviceorientation', orientationListener, true);
+  orientationListener = handleOrientation;
+  window.addEventListener('deviceorientation', orientationListener, true);
+}
+
+function handleOrientation(e) {
+  if (e.webkitCompassHeading != null) {
+    compassHeading = e.webkitCompassHeading; // iOS — already CW from north
+  } else if (e.alpha != null) {
+    compassHeading = (360 - e.alpha + 360) % 360; // Android alpha is CCW
+  }
+  updateCompassDisplay();
+}
+
+function updateCompassDisplay() {
+  if (compassHeading === null) return;
+  const svg = document.getElementById('compassSvg');
+  const needle = document.getElementById('qiblaNeedle');
+  if (!svg) return;
+  // Rotate compass face so geographic N stays visually at top
+  svg.style.transform = `rotate(${-compassHeading}deg)`;
+  // Rotate needle to absolute qiblaBearing (stays pointing at Makkah)
+  if (needle && qiblaBearing !== null) {
+    needle.style.transform = `rotate(${qiblaBearing}deg)`;
+  }
+  const span = document.getElementById('compassHeadingText');
+  if (span) span.textContent = Math.round(compassHeading);
+}
 
 // ── Load from URL params on startup ────────────────────────
 (function() {
