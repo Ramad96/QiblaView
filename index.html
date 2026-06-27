@@ -1017,6 +1017,14 @@
         <span class="settings-opt-tick">✦</span>
       </div>
     </div>
+    <div class="settings-group">
+      <div class="settings-group-label">Map</div>
+      <div class="settings-opt" id="optMosques" onclick="setMosques(!showMosques)">
+        <span class="settings-opt-icon">☽</span>
+        <span class="settings-opt-name">Show holy mosques</span>
+        <span class="settings-opt-tick">✦</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1155,6 +1163,7 @@ function syncSettingsUI() {
   });
   document.getElementById('optMetric')?.classList.toggle('sel', currentUnits === 'metric');
   document.getElementById('optImperial')?.classList.toggle('sel', currentUnits === 'imperial');
+  document.getElementById('optMosques')?.classList.toggle('sel', showMosques);
   const cb = document.getElementById('mosqueCheckbox');
   if (cb) cb.checked = showMosques;
 }
@@ -1561,6 +1570,9 @@ async function processCoords(lat, lng, locationName) {
   initMap(lat, lng);
   highlightFace(face);
   setStatus(`Qibla is ${bearing.toFixed(1)}° from North — facing the ${faceInfo[face].english}`);
+
+  const params = new URLSearchParams({ city: locationName, lat: lat.toFixed(5), lng: lng.toFixed(5) });
+  history.replaceState(null, '', '?' + params.toString());
 }
 
 // ── Photo data ─────────────────────────────────────────────
@@ -1665,6 +1677,26 @@ function showPhotoFallback() {
 }
 
 document.getElementById('footerVersion').textContent = 'v' + VERSION;
+
+// ── Escape key closes modals ────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('settingsPanel').classList.contains('open')) closeSettings();
+  else if (document.getElementById('aboutBackdrop').classList.contains('open')) closeAbout();
+});
+
+// ── Load from URL params on startup ────────────────────────
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const lat = parseFloat(params.get('lat'));
+  const lng = parseFloat(params.get('lng'));
+  const city = params.get('city') || '';
+  if (!isNaN(lat) && !isNaN(lng)) {
+    const name = city || `${lat.toFixed(2)}°, ${lng.toFixed(2)}°`;
+    document.getElementById('cityInput').value = name;
+    processCoords(lat, lng, name);
+  }
+})();
 </script>
 </body>
 </html>
